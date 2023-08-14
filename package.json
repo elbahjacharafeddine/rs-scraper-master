@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "server.js",
   "engines": {
-    "node": "18.16.0"
+    "node": "12.5.0"
   },
   "author": "Akram Aznakour",
   "license": "MIT",
