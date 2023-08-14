@@ -22,11 +22,11 @@ const setupBrowserPage = async ({ allowedRequests, useNativePuppeteer }) => {
   const browser = useNativePuppeteer && useNativePuppeteer === true
       ? await nativePuppeteer.launch({
           args: ["--no-sandbox"],
-          headless: true,
+          headless: false,
         })
       : await puppeteer.launch({
           args: ["--no-sandbox"],
-          headless: true,
+          headless: false,
         });
 
   const page = await browser.newPage();
