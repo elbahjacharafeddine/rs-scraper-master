@@ -186,5 +186,5 @@ async function autoScrollToPercentage(page, percentage) {
 }
 
 module.exports = {
-  journalData: journalData
+  journalData
 };
