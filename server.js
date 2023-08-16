@@ -5,6 +5,7 @@ dotenv.config();
 const http = require("http");
 
 const app = express();
+const WebSocket = require('ws');
 
 const Sentry = require('@sentry/node');
 Sentry.init({ dsn: 'https://80a12083a1774420b431700d1d2cf56f@o433230.ingest.sentry.io/5387943' });
