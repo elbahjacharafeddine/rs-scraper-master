@@ -103,7 +103,7 @@ const getIF = async (req, resp) => {
         catch (error){
             console.log("erreur de cookies")
         }
-        await page.waitForTimeout(3000)
+        await page.waitForTimeout(1000)
         await frame.waitForSelector(EMAIL_INPUT_SELECTOR);
         await frame.type(EMAIL_INPUT_SELECTOR, CLARIVATE_ACCOUNT_EMAIL);
 
@@ -176,7 +176,7 @@ const getIF = async (req, resp) => {
         await page.hover(JOURNAL_BUTTON_SELECTOR);
         await page.click(JOURNAL_BUTTON_SELECTOR);
 
-
+        await page.waitForTimeout(1000)
         await page.waitForSelector(IF_VALUE_SPAN_SELECTOR, { timeout: 5000 });
         const firstIF = await page.$(IF_VALUE_SPAN_SELECTOR);
         if (firstIF){
