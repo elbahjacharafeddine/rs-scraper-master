@@ -148,6 +148,9 @@ const journalData = async ({ journalName, year }) => {
         sjr = item.sjr;
         break;
       }
+      else if(parseInt(item.year) ==year-1 && parseInt(item.sjr)<=3){
+        sjr = item.sjr
+      }
     }
     console.log('dans la derniere etape ...')
     return { journal: { SJR:sjr } };
