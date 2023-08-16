@@ -14,9 +14,9 @@ const JOURNAL_BUTTON_SELECTOR_SECOND_PART =
 
 const EMAIL_INPUT_SELECTOR = "#mat-input-0";
 const PASSWORD_INPUT_SELECTOR = "#mat-input-1";
-const CLARIVATE_ACCOUNT_EMAIL = process.env.CLARIVATE_ACCOUNT_EMAIL;
+const CLARIVATE_ACCOUNT_EMAIL = "elbahjacharafeddine2020@gmail.com";
 console.log(CLARIVATE_ACCOUNT_EMAIL);
-const CLARIVATE_ACCOUNT_PASSWORD = process.env.CLARIVATE_ACCOUNT_PASSWORD;
+const CLARIVATE_ACCOUNT_PASSWORD = "36SDrAmhQ9-rp!2";
 console.log(CLARIVATE_ACCOUNT_PASSWORD);
 const LOGIN_BUTTON_SELECTOR =
   "body > microui-app > section > microui-base > div:nth-child(1) > div > base-login > div > div.login-body.login-widget > div:nth-child(1) > login > steam-login > form > div:nth-child(4) > div:nth-child(2) > button";
@@ -25,6 +25,7 @@ const SEARCH_BUTTON_SELECTOR = "#search-button";
 const SEARCH_RESULT_CARD_SELECTOR =
   "body > cdx-app > mat-sidenav-container > mat-sidenav-content > main > can-home-page > div > div > div > mat-sidenav-container > mat-sidenav-content > app-journal-search-results > div:nth-child(3) > div";
 const IF_VALUE_SPAN_SELECTOR = "#minicard-body-value-lg";
+
 const SEARCH_RESULT_CARD_TITLE_SELECTOR = "mat-card-title";
 const WRITE_COOKIES_OBJECT_ERROR_MESSAGE = "The file could not be written.";
 const WRITE_COOKIES_OBJECT_SUCCESS_MESSAGE =
