@@ -18,6 +18,7 @@ app.use(cors());
 app.use("/screenshots", express.static(__dirname + "/public/screenshots"));
 
 const router = require("./routes");
+const {authorsController, journalsController} = require("./app/controllers");
 app.use("/", router);
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
@@ -39,5 +40,11 @@ wss.on('connection', async (ws) => {
 
     ws.on('message', async (message) => {
         const data = JSON.parse(message);
-        console.log(data)
+        if (data.authorId){
+            await authorsController.author(data.authorId,ws)
+        }
+        else if(data.journalName && data.year){
+            console.log(data.journalName +" && year = "+data.year)
+            await journalsController.journalData(data.journalName, data.year, ws)
+        }
     })})
