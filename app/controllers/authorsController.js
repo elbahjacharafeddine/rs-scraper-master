@@ -12,21 +12,20 @@ const authorSearch = async (req, resp) => {
     return;
   }
 
-  const scholarAuthors = await scholarScraper.authorSearch({ authorName });
+  // const scholarAuthors = await scholarScraper.authorSearch({ authorName });
   const scopusAuthors = await scopusScraper.authorSearch({ authorName });
-  if (scholarAuthors.error && scopusAuthors.error) {
-    resp.status(200).send({
-      error: { scholar: scholarAuthors.error, scopus: scopusAuthors.error },
-    });
-   
-  }
-  if (scholarAuthors.authors || scopusAuthors.authors) {
+
+  // if (scholarAuthors.error && scopusAuthors.error) {
+  //   resp.status(200).send({
+  //     error: { scholar: scholarAuthors.error, scopus: scopusAuthors.error },
+  //   });
+  // }
+
+  if ( scopusAuthors.authors) {
     const authors = [
-      ...(scholarAuthors.authors ? scholarAuthors.authors : []),
+      // ...(scholarAuthors.authors ? scholarAuthors.authors : []),
       ...(scopusAuthors.authors ? scopusAuthors.authors : []),
     ];
-    console.log({authors});
-    
     resp.send({ authors });
   }
 };
@@ -40,8 +39,8 @@ const author = async (req, resp) => {
   }
 
   if (
-    process.env.USING_STORED_AUTHOR_DATA &&
-    process.env.USING_STORED_AUTHOR_DATA === "true"
+      process.env.USING_STORED_AUTHOR_DATA &&
+      process.env.USING_STORED_AUTHOR_DATA === "true"
   ) {
     if (fs.existsSync(`${AUTHOR_STORAGE_PATH}/${authorId}.json`)) {
       const file = fs.readFileSync(`${AUTHOR_STORAGE_PATH}/${authorId}.json`, "utf8");
@@ -53,24 +52,24 @@ const author = async (req, resp) => {
   }
 
   const scrapingResult =
-    platform === "scholar"
-      ? await scholarScraper.authorData({ authorId })
-      : platform === "scopus"
-      ? await scopusScraper.authorData({ authorId })
-      : { error: "unsupported platform" };
+      platform === "scholar"
+          ? await scholarScraper.authorData({ authorId })
+          : platform === "scopus"
+              ? await scopusScraper.authorData({ authorId })
+              : { error: "unsupported platform" };
 
   if (scrapingResult.author) {
     const { author } = scrapingResult;
-    console.log(JSON.stringify({author}))
+
     resp.send({ author });
 
     if (
-      process.env.STORING_AUTHORS_DATA &&
-      process.env.STORING_AUTHORS_DATA === "true"
+        process.env.STORING_AUTHORS_DATA &&
+        process.env.STORING_AUTHORS_DATA === "true"
     ) {
       fs.writeFileSync(
-        `${AUTHOR_STORAGE_PATH}/${authorId}.json`,
-        JSON.stringify(author)
+          `${AUTHOR_STORAGE_PATH}/${authorId}.json`,
+          JSON.stringify(author)
       );
     }
   } else if (scrapingResult.error) {

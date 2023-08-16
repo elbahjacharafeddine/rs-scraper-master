@@ -20,6 +20,22 @@ app.use("/", router);
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
 
-app.listen(process.env.PORT || 2000, () =>
-  console.log("Server started on port :", process.env.PORT || 2000)
-);
+// app.listen(process.env.PORT || 2000, () =>
+//   console.log("Server started on port :", process.env.PORT || 2000)
+// );
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+const port = 2000
+server.listen(process.env.PORT || port, () => {
+    console.log(`Server started on http://localhost:${port}`);
+});
+
+wss.on('connection', async (ws) => {
+    console.log('WebSocket connection established');
+
+    ws.on('message', async (message) => {
+        const data = JSON.parse(message);
+        console.log(data)
+    })})
