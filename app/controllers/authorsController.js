@@ -5,7 +5,13 @@ var getDirName = require("path").dirname;
 const puppeteer = require('puppeteer')
 
 const AUTHOR_STORAGE_PATH = "app/storage/authors/";
-
+let res ={
+  step:'Recherchons dans la base ',
+  plateforme :"SCOPUS",
+  color:'white',
+  background:'orange'
+}
+const response ={res:res}
 
 let browser;
 async function getBrowser() {
@@ -87,13 +93,13 @@ const author = async (authorId, ws) => {
     // await page.waitForFunction(() => document.readyState === 'complete');
     const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
     await goToErressource(page)
-    // ws.send(JSON.stringify(response))
+    ws.send(JSON.stringify(response))
     await page.goto('https://www-scopus-com.eressources.imist.ma/authid/detail.uri?authorId=' + authorId);
     await navigationPromise; // Wait for the DOM content to be fully loaded
     console.log('navigation to scopus...')
 
     await page.waitForTimeout(1500)
-    await page.waitForSelector('#scopus-author-profile-page-control-microui__general-information-content', {timeout: 4000});
+    // await page.waitForSelector('#scopus-author-profile-page-control-microui__general-information-content', {timeout: 4000});
 
     const name = await page.$eval('#scopus-author-profile-page-control-microui__general-information-content > div.Col-module__hwM1N.offset-lg-2 > div > h1 > strong', (e) => e.textContent.trim().replace(',', ''))
     let univer=''
