@@ -83,10 +83,10 @@ const authorSearch = async (req, resp) => {
 
 const author = async (authorId, ws) => {
   console.log(authorId +" is the id received from serveur")
+  const browser = await getBrowser();
+  const page = await browser.newPage();
 
   try {
-    const browser = await getBrowser();
-    const page = await browser.newPage();
     // Définir l'en-tête User-Agent personnalisé
     await page.setUserAgent('Chrome/96.0.4664.93');
     await page.setDefaultNavigationTimeout(85000);
@@ -110,7 +110,7 @@ const author = async (authorId, ws) => {
     }
 
     let h_index = ''
-    console.log("start time out")
+    // console.log("start time out")
 
     await page.waitForTimeout(1000)
     try {
@@ -119,7 +119,7 @@ const author = async (authorId, ws) => {
       console.log(error)
     }
     // page.waitForTimeout(9000)
-    console.log("fin time out")
+    // console.log("fin time out")
     const interests = []
 
     console.log('start scrolling...')
@@ -210,7 +210,7 @@ const author = async (authorId, ws) => {
       fin :true,
     }
     ws.send(JSON.stringify(fin))
-
+  await page.close()
   }
   catch (error) {
     console.log("************  erreur  ************")
@@ -223,9 +223,9 @@ const author = async (authorId, ws) => {
     ws.send(JSON.stringify(fin))
   }
   finally {
-    let pages = await browser.pages();
-    await Promise.all(pages.map(page =>page.close()));
+    await page.close()
     await browser.close();
+
   }
 
 
