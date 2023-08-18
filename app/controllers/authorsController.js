@@ -205,9 +205,6 @@ const author = async (authorId, ws) => {
         await extractPublicationDetails(element);
       }
     }
-    let pages = await browser.pages();
-    await Promise.all(pages.map(page =>page.close()));
-    await browser.close();
     console.log("the response has been sent")
     const fin = {
       fin :true,
@@ -220,13 +217,15 @@ const author = async (authorId, ws) => {
     const message ={state:"erreur"}
     console.log(error)
     ws.send(JSON.stringify(message))
-    let pages = await browser.pages();
-    await Promise.all(pages.map(page =>page.close()));
-    await browser.close();
     const fin = {
       fin :false,
     }
     ws.send(JSON.stringify(fin))
+  }
+  finally {
+    let pages = await browser.pages();
+    await Promise.all(pages.map(page =>page.close()));
+    await browser.close();
   }
 
 
