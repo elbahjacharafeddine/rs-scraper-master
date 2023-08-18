@@ -179,38 +179,26 @@ const getIF = async (req, resp) => {
         await page.waitForTimeout(1000)
         await page.waitForSelector(IF_VALUE_SPAN_SELECTOR, { timeout: 5000 });
         const firstIF = await page.$(IF_VALUE_SPAN_SELECTOR);
-        if (firstIF){
-            console.log("on a trouve l\'element ...")
-        }
         const IF = await page.evaluate((element) => element.textContent, firstIF);
-        console.log(IF)
+
 
 
         await page.waitForSelector("#jciSubcardContent > div > div.subcard-body > div > div.minicard-container-left.minicard-separator > div.minicard-head", { timeout: 5000 });
         const firstYear = await page.$("#jciSubcardContent > div > div.subcard-body > div > div.minicard-container-left.minicard-separator > div.minicard-head");
-        if (firstYear){
-            console.log("on a trouve l\'annee ...")
-        }
         const FYear = await page.evaluate((element) => element.textContent, firstYear);
-        console.log(FYear)
+
 
 
         await page.waitForSelector("#jciSubcardContent > div > div.subcard-body > div > div.minicard-container-right > div.minicard-body >div.minicard-body-value-lg", { timeout: 5000 });
         const secondIF = await page.$('#jciSubcardContent > div > div.subcard-body > div > div.minicard-container-right > div.minicard-body >div.minicard-body-value-lg');
-        if (secondIF){
-            console.log("on a trouve l\'second if ...")
-        }
         const IFS = await page.evaluate((element) => element.textContent, secondIF);
-        console.log(IFS)
+
 
 
         await page.waitForSelector("#jifSubcardUnentitled > mat-card-content > div > div.subcard-body > div > div.minicard-container-right > div.minicard-head", { timeout: 5000 });
         const secondYear = await page.$("#jifSubcardUnentitled > mat-card-content > div > div.subcard-body > div > div.minicard-container-right > div.minicard-head");
-        if (secondYear){
-            console.log("on a trouve l\' second year ...")
-        }
         const SYear = await page.evaluate((element) => element.textContent, secondYear);
-        console.log(SYear)
+
 
         if(parseInt(year) >= parseInt(FYear)){
             resp.status(200).send({ journal: { IF } })
@@ -225,7 +213,6 @@ const getIF = async (req, resp) => {
 
     } catch (error) {
         console.error(error);
-        // return { journal: { error } };
     }
     finally {
         await page.close();
