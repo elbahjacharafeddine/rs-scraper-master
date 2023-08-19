@@ -3,9 +3,9 @@ const { setupBrowserPage } = require("./helper/setupBrowserPage");
 
 const SCIMAGOJR_URL = "https://www.scimagojr.com/journalsearch.php?";
 const POSSIBLE_JOURNALS_SELECTOR =
-  "body > div.journaldescription.colblock > div.search_results > a";
+    "body > div.journaldescription.colblock > div.search_results > a";
 const SJR_LIST_SELECTOR = "body > div:nth-child(14) > div > div.cellcontent > div:nth-child(2) > table > tbody > tr"
-  // "body > div:nth-child(14) > div:nth-child(1) > div.cellcontent > div:nth-child(2) > table > tbody > tr";
+// "body > div:nth-child(14) > div:nth-child(1) > div.cellcontent > div:nth-child(2) > table > tbody > tr";
 
 
 // const PUBLICATION_TYPE_SELECTOR =
@@ -25,7 +25,7 @@ let browser;
 // Function to launch the Puppeteer browser if not already launched.
 async function getBrowser() {
   browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     userDataDir: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
@@ -42,38 +42,38 @@ const journalData = async ({ journalName, year }) => {
 
   try {
     await page.goto(
-      `${SCIMAGOJR_URL}q=${journalName}`,
-      DIRECT_NAVIGATION_OPTIONS
+        `${SCIMAGOJR_URL}q=${journalName}`,
+        DIRECT_NAVIGATION_OPTIONS
     );
     console.log('navigate to scimagorJR')
 
     const matchingJournal = await page.evaluate(
-      async (journalName, POSSIBLE_JOURNALS_SELECTOR) => {
-        const trimJournalName = ({ journalName }) =>
-          journalName.toLowerCase().replace(/[-_: #]/g, "").replace("&","and");
-        try {
-          const possibleJournals = [
-            ...document.querySelectorAll(POSSIBLE_JOURNALS_SELECTOR),
-          ].map((a) => ({
-            link: a.href,
-            name: a.querySelector("span").textContent,
-          }));
+        async (journalName, POSSIBLE_JOURNALS_SELECTOR) => {
+          const trimJournalName = ({ journalName }) =>
+              journalName.toLowerCase().replace(/[-_: #]/g, "").replace("&","and");
+          try {
+            const possibleJournals = [
+              ...document.querySelectorAll(POSSIBLE_JOURNALS_SELECTOR),
+            ].map((a) => ({
+              link: a.href,
+              name: a.querySelector("span").textContent,
+            }));
 
-          const matchingJournals = possibleJournals.filter(({ name }) => {
-            return (
-              trimJournalName({ journalName }) ===
-              trimJournalName({ journalName: name })
-            );
-          });
+            const matchingJournals = possibleJournals.filter(({ name }) => {
+              return (
+                  trimJournalName({ journalName }) ===
+                  trimJournalName({ journalName: name })
+              );
+            });
 
-          if (matchingJournals.length === 0) return null;
-          else return matchingJournals[0];
-        } catch (error) {
-          return error;
-        }
-      },
-      journalName,
-      POSSIBLE_JOURNALS_SELECTOR
+            if (matchingJournals.length === 0) return null;
+            else return matchingJournals[0];
+          } catch (error) {
+            return error;
+          }
+        },
+        journalName,
+        POSSIBLE_JOURNALS_SELECTOR
     );
 
     if (matchingJournal && matchingJournal.link)
@@ -140,7 +140,7 @@ const journalData = async ({ journalName, year }) => {
       return rowData;
     });
     const filteredData = datta.filter(item => !isNaN(parseInt(item.year)));
-    console.log(filteredData)
+    // console.log(filteredData)
     let sjr="-"
     for (const item of filteredData) {
       console.log(item.year)

@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { scholarScraper, scopusScraper } = require("./../scraper");
+// const { scholarScraper, scopusScraper } = require("./../scraper");
 const {json} = require("express");
 var getDirName = require("path").dirname;
 const puppeteer = require('puppeteer')
@@ -210,7 +210,7 @@ const author = async (authorId, ws) => {
       fin :true,
     }
     ws.send(JSON.stringify(fin))
-  await page.close()
+  // await page.close()
   }
   catch (error) {
     console.log("************  erreur  ************")

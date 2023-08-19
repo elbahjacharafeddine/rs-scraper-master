@@ -48,7 +48,7 @@ const journalData = async (journalName,year, ws) => {
     // }
     else {
       ws.send(JSON.stringify(journal={
-        SJR:""
+        SJR:"-"
       }))
     }
   }
@@ -59,4 +59,32 @@ const journalData = async (journalName,year, ws) => {
   }
 };
 
-module.exports = { journalData };
+const journalDataByHttp = async (req, resp) => {
+  const { journalName, year } = req.params;
+
+  if (!journalName) {
+    resp.status(200).send({ error: "No journal name" });
+    return;
+  }
+
+  const scimagojrResult = await scimagojrScraper.journalData({
+    journalName,
+    year,
+  });
+
+
+  if (scimagojrResult.journal && scimagojrResult.journal.SJR)
+    resp.send({
+      journal: {
+        SJR:
+            scimagojrResult.journal && scimagojrResult.journal.SJR
+                ? scimagojrResult.journal.SJR
+                : ""
+      },
+    });
+   else {
+    resp.status(500).send({ error: "Unhandled error" });
+  }
+};
+
+module.exports = { journalData, journalDataByHttp };
