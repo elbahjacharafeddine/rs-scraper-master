@@ -2,11 +2,6 @@ const { scimagojrScraper, greensciScraper ,scopusScraper} = require("../scraper"
 
 const journalData = async (journalName,year, ws) => {
 
-
-  // if (!journalName) {
-  //   ws.status(200).send({ error: "No journal name" });
-  //   return;
-  // }
   try {
     const scimagojrResult = await scimagojrScraper.journalData({
       journalName,

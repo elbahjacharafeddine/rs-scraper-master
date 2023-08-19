@@ -21,7 +21,7 @@ const DIRECT_NAVIGATION_OPTIONS = {
 const puppeteer = require('puppeteer')
 
 let browser;
-
+let number = 0
 // Function to launch the Puppeteer browser if not already launched.
 async function getBrowser() {
   browser = await puppeteer.launch({
@@ -34,9 +34,6 @@ async function getBrowser() {
 }
 
 const journalData = async ({ journalName, year }) => {
-  // const { browser, page } = await setupBrowserPage({
-  //   allowedRequests: [],
-  // });
   const browser = await getBrowser()
   const page = await browser.newPage()
 
@@ -79,15 +76,7 @@ const journalData = async ({ journalName, year }) => {
     if (matchingJournal && matchingJournal.link)
       await page.goto(matchingJournal.link, DIRECT_NAVIGATION_OPTIONS);
     else return { error: matchingJournal };
-    console.log('navigate to first link from the array ...')
-    // const publicationType = await page.evaluate(
-    //   async (PUBLICATION_TYPE_SELECTOR) =>
-    //     document.querySelector(PUBLICATION_TYPE_SELECTOR).textContent,
-    //   PUBLICATION_TYPE_SELECTOR
-    // );
-    //
-    // if (publicationType.toLocaleLowerCase().includes("conference"))
-    //   return { error: "conference" };
+
     console.log('start to collect SJR')
     await autoScrollToPercentage(page, 35)
     const selector = 'body > div.dashboard > div.cell1x1.dynamiccell > div.cellheader > div.combo_buttons > div.combo_button.table_button > img'
@@ -95,38 +84,6 @@ const journalData = async ({ journalName, year }) => {
     await page.click(selector);
 
     await page.waitForTimeout(1000)
-
-    // const SJR = await page.evaluate(
-    //   async (year, SJR_LIST_SELECTOR) => {
-    //     try {
-    //       const results = [...document.querySelectorAll(SJR_LIST_SELECTOR)]
-    //         .map((a) => [...a.querySelectorAll("td")])
-    //         // .filter((tds) => tds.length === 2)
-    //         .map((a) => ({ year: a[0].textContent, sjr: a[1].textContent }))
-    //         .sort((a, b) => (parseInt(a.year) < parseInt(b.year) ? 1 : -1))
-    //         .sort(
-    //           (a, b) =>
-    //             Math.abs(parseInt(a.year) - parseInt(year)) -
-    //             Math.abs(parseInt(b.year) - parseInt(year))
-    //         );
-    //       console.log('fin for SJR next step ...')
-    //       console.log(results)
-    //       if (results.length === 0) return null;
-    //       else {
-    //         // console.log(results)
-    //         return results[0].sjr
-    //       };
-    //
-    //     } catch (error) {
-    //
-    //       return { error} ;
-    //     }
-    //   },
-    //   year,
-    //   SJR_LIST_SELECTOR
-    // );
-
-
 
     const datta = await page.evaluate(() => {
       const tableRows = Array.from(document.querySelectorAll('.dashboard .cellcontent div:nth-child(2).cellslide table tbody tr'));
@@ -140,10 +97,9 @@ const journalData = async ({ journalName, year }) => {
       return rowData;
     });
     const filteredData = datta.filter(item => !isNaN(parseInt(item.year)));
-    // console.log(filteredData)
+
     let sjr="-"
     for (const item of filteredData) {
-      console.log(item.year)
       if (item.year == year && parseInt(item.sjr)<=3) {
         sjr = item.sjr;
         break;
@@ -153,6 +109,8 @@ const journalData = async ({ journalName, year }) => {
       }
     }
     console.log('dans la derniere etape ...')
+    number +=1
+    console.log(number)
     return { journal: { SJR:sjr } };
   } catch (error) {
     return { error };
