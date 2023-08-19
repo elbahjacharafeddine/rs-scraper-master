@@ -100,7 +100,12 @@ const author = async (authorId, ws) => {
     console.log('navigation to scopus...')
 
     await page.waitForTimeout(1500)
-    await page.waitForSelector('#scopus-author-profile-page-control-microui__general-information-content', {timeout: 4000});
+    try {
+      await page.waitForSelector('#scopus-author-profile-page-control-microui__general-information-content', {timeout: 4000});
+    }
+    catch (error){
+
+    }
 
     const name = await page.$eval('#scopus-author-profile-page-control-microui__general-information-content > div.Col-module__hwM1N.offset-lg-2 > div > h1 > strong', (e) => e.textContent.trim().replace(',', ''))
     let univer=''
