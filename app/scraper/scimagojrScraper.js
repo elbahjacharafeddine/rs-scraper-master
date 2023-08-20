@@ -43,6 +43,7 @@ const journalData = async ({ journalName, year }) => {
         DIRECT_NAVIGATION_OPTIONS
     );
     console.log('navigate to scimagorJR')
+    number +=1
 
     const matchingJournal = await page.evaluate(
         async (journalName, POSSIBLE_JOURNALS_SELECTOR) => {
@@ -109,7 +110,7 @@ const journalData = async ({ journalName, year }) => {
       }
     }
     console.log('dans la derniere etape ...')
-    number +=1
+
     console.log(number)
     return { journal: { SJR:sjr } };
   } catch (error) {
