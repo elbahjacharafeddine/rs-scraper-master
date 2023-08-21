@@ -21,7 +21,6 @@ const DIRECT_NAVIGATION_OPTIONS = {
 const puppeteer = require('puppeteer')
 
 let browser;
-let number = 0
 // Function to launch the Puppeteer browser if not already launched.
 async function getBrowser() {
   browser = await puppeteer.launch({
@@ -43,7 +42,7 @@ const journalData = async ({ journalName, year }) => {
         DIRECT_NAVIGATION_OPTIONS
     );
     console.log('navigate to scimagorJR')
-    number +=1
+
 
     const matchingJournal = await page.evaluate(
         async (journalName, POSSIBLE_JOURNALS_SELECTOR) => {
@@ -111,7 +110,6 @@ const journalData = async ({ journalName, year }) => {
     }
     console.log('dans la derniere etape ...')
 
-    console.log(number)
     return { journal: { SJR:sjr } };
   } catch (error) {
     return { error };
