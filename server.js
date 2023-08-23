@@ -12,7 +12,9 @@ Sentry.init({ dsn: 'https://80a12083a1774420b431700d1d2cf56f@o433230.ingest.sent
 // The request handler must be the first middleware on the app
 app.use(Sentry.Handlers.requestHandler());
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://rs-client-master.vercel.app'
+}));
 
 
 app.use("/screenshots", express.static(__dirname + "/public/screenshots"));
