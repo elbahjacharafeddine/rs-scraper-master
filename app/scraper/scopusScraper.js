@@ -39,43 +39,49 @@ const DIRECT_NAVIGATION_OPTIONS = {
   timeout: 0,
 };
 
-const authorSearch = async ({ authorName }) => {
-  const { browser, page } = await setupBrowserPage({
-    allowedRequests: [],
+const puppeteer = require('puppeteer')
+let browser
+async function getBrowser() {
+  browser = await puppeteer.launch({
+    headless: true,
+    userDataDir: false,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
+
+  return browser;
+}
+
+
+const authorSearch = async ({ authorName }) => {
+  // const { browser, page } = await setupBrowserPage({
+  //   allowedRequests: [],
+  // });
+const browser = await getBrowser()
+  const page = await browser.newPage();
+  await page.setUserAgent('Chrome/96.0.4664.93');
+  await page.setDefaultNavigationTimeout(85000);
+  // await page.waitForFunction(() => document.readyState === 'complete');
+  const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
 
   try {
     const params =
-      authorName.trim().split(" ").length > 1
-        ? "&st1=" +
-          authorName.split(" ")[0] +
-          "&st2=" +
-          authorName.split(" ")[1].replace(" ", "%20")
-        : "&st1=" + authorName.split(" ")[0];
+        authorName.trim().split(" ").length > 1
+            ? "&st1=" +
+            authorName.split(" ")[0] +
+            "&st2=" +
+            authorName.split(" ")[1].replace(" ", "%20")
+            : "&st1=" + authorName.split(" ")[0];
 
     await page.goto(SCOPUS_SEARCH_URL + params, DIRECT_NAVIGATION_OPTIONS);
+    await navigationPromise;
+    console.log("navigate to scopus list authors ....")
 
-    if (process.env.DEBUG == "true") {
-      const fileName = Date.now() + ".png";
-      console.log("screenshot : ", fileName);
-      await page.screenshot({
-        path: "./public/screenshots/" + fileName,
-        fullPage: true,
-      });
-    }
+
 
     await page.waitForSelector("#srchResultsList", {
       timeout: 2000,
     });
 
-    if (process.env.DEBUG == "true") {
-      const fileName = Date.now() + ".png";
-      console.log("screenshot : ", fileName);
-      await page.screenshot({
-        path: "./public/screenshots/" + fileName,
-        fullPage: true,
-      });
-    }
 
     const authors = await page.evaluate(() => {
       const fieldsToProperties = (array) => ({
@@ -89,8 +95,8 @@ const authorSearch = async ({ authorName }) => {
 
       const htmlAuthors = [
         ...document
-          .getElementById("srchResultsList")
-          .querySelectorAll("tr.searchArea"),
+            .getElementById("srchResultsList")
+            .querySelectorAll("tr.searchArea"),
       ];
 
       const authors = htmlAuthors.map((a) => {
@@ -98,11 +104,11 @@ const authorSearch = async ({ authorName }) => {
         const fieldsArray = htmlFields.map((b) => b.textContent.trim());
         const link = a.querySelector("a") ? a.querySelector("a").href : "";
         const authorId = link.includes("authorID")
-          ? link
-              .split("&")
-              .filter((a) => a.indexOf("authorID=") != -1)[0]
-              .split("=")[1]
-          : "";
+            ? link
+                .split("&")
+                .filter((a) => a.indexOf("authorID=") != -1)[0]
+                .split("=")[1]
+            : "";
 
         return {
           authorId,
@@ -120,14 +126,14 @@ const authorSearch = async ({ authorName }) => {
       authors: authors.map((author) => ({ ...author, platform: PLATFORM })),
     };
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return { error };
   } finally {
     await page.close();
     await browser.close();
+    console.log("partie finally")
   }
 };
-
 const authorData = async ({ authorId }) => {
   const { browser, page } = await setupBrowserPage({
     allowedRequests: ["xhr", "script"],

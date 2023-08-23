@@ -27,8 +27,8 @@ async function getBrowser() {
 
 async function goToErressource(page) {
   await page.goto('https://eressources.imist.ma/login');
-  await page.type('#email', 'lachgar.m@ucd.ac.ma');
-  await page.type('#password', 'Azerty@@00');
+  await page.type('#email', 'e-elbahja.c@ucd.ma');
+  await page.type('#password', 'LEv.q8XeGxP2Pid');
   // LEv.q8XeGxP2Pid
   //e-elbahja.c@ucd.ma
 
@@ -62,20 +62,12 @@ async function autoScroll(page){
 
 const authorSearch = async (req, resp) => {
   const { authorName } = req.params;
-
   if (!authorName) {
     resp.status(200).send({ error: "No author name" });
     return;
   }
-  console.log('we start search ')
-  // const scholarAuthors = await scholarScraper.authorSearch({ authorName });
-  const scopusAuthors = await scopusScraper.authorSearch({ authorName });
 
-  // if (scholarAuthors.error && scopusAuthors.error) {
-  //   resp.status(200).send({
-  //     error: { scholar: scholarAuthors.error, scopus: scopusAuthors.error },
-  //   });
-  // }
+  const scopusAuthors = await scopusScraper.authorSearch({ authorName });
 
   if ( scopusAuthors.authors) {
     const authors = [
