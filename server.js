@@ -139,6 +139,7 @@ app.get('/auth/scopus/:authorId',async (req, res) =>{
             citationsPerYear,
         };
 
+        res.header('Access-Control-Allow-Origin', 'https://rs-client-master.vercel.app');
         res.send({ "author": { authorId, platform: "scopus", ...author } });
         console.log("the response has been sent")
 
