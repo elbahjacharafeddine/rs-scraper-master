@@ -62,7 +62,7 @@ const browser = await getBrowser()
   await page.setDefaultNavigationTimeout(85000);
   // await page.waitForFunction(() => document.readyState === 'complete');
   const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-
+  console.log("received name "+ authorName)
   try {
     const params =
         authorName.trim().split(" ").length > 1
@@ -74,7 +74,7 @@ const browser = await getBrowser()
 
     await page.goto(SCOPUS_SEARCH_URL + params, DIRECT_NAVIGATION_OPTIONS);
     await navigationPromise;
-    console.log("navigate to scopus list authors ....")
+    console.log("navigate to scopus platform ....")
 
 
 
@@ -121,7 +121,7 @@ const browser = await getBrowser()
 
       return authors.filter(({ authorId }) => authorId);
     });
-
+    console.log("We are in the End thanks ...")
     return {
       authors: authors.map((author) => ({ ...author, platform: PLATFORM })),
     };
@@ -134,6 +134,8 @@ const browser = await getBrowser()
     console.log("partie finally")
   }
 };
+
+
 const authorData = async ({ authorId }) => {
   const { browser, page } = await setupBrowserPage({
     allowedRequests: ["xhr", "script"],
