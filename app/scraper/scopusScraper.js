@@ -74,7 +74,7 @@ const browser = await getBrowser()
 
     await page.goto(SCOPUS_SEARCH_URL + params, DIRECT_NAVIGATION_OPTIONS);
     await navigationPromise;
-    console.log("navigate to scopus platform ....")
+    console.log("navigate to scopus platform .......")
 
 
 
