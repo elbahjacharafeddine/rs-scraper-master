@@ -12,9 +12,7 @@ Sentry.init({ dsn: 'https://80a12083a1774420b431700d1d2cf56f@o433230.ingest.sent
 // The request handler must be the first middleware on the app
 app.use(Sentry.Handlers.requestHandler());
 app.use(express.json());
-app.use(cors({
-    origin: 'https://rs-client-master.vercel.app'
-}));
+app.use(cors());
 
 
 app.use("/screenshots", express.static(__dirname + "/public/screenshots"));
@@ -52,7 +50,7 @@ wss.on('connection', async (ws) => {
     })})
 
 
-app.get('/auth/scopus/:authorId',async (req, res) =>{
+app.get('/autho/scopus/:authorId',async (req, res) =>{
     const {authorId} = req.params
     try {
         const browser = await getBrowser();
@@ -138,8 +136,8 @@ app.get('/auth/scopus/:authorId',async (req, res) =>{
             coauthors: [],
             citationsPerYear,
         };
-
-        res.header('Access-Control-Allow-Origin', 'https://rs-client-master.vercel.app');
+//
+        // res.header('Access-Control-Allow-Origin', 'https://rs-client-master.vercel.app');
         res.send({ "author": { authorId, platform: "scopus", ...author } });
         console.log("the response has been sent")
 
