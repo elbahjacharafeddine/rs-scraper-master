@@ -50,7 +50,7 @@ wss.on('connection', async (ws) => {
     })})
 
 
-app.get('/auth/scopus/:authorId',async (req, res) =>{
+app.get('/prof/scopus/:authorId',async (req, res) =>{
     const {authorId} = req.params
     try {
         const browser = await getBrowser();
