@@ -1,3 +1,4 @@
+// const fetch = require('node-fetch')
 const express = require('express');
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -6,6 +7,7 @@ const http = require("http");
 
 const app = express();
 const WebSocket = require('ws');
+const https = require('https');
 
 const Sentry = require('@sentry/node');
 Sentry.init({ dsn: 'https://80a12083a1774420b431700d1d2cf56f@o433230.ingest.sentry.io/5387943' });
@@ -153,12 +155,83 @@ app.get('/prof/scopus/:authorId',async (req, res) =>{
 })
 
 
+
+
+const amqp = require('amqplib/callback_api')
+app.get('/call-rabbitmq',async (req, res) => {
+let listFollowedUsers = []
+    amqp.connect('amqps://sosytgab:jPleCfcPHfayJEgRoLXeDgVgyt3aBd_0@rattlesnake.rmq.cloudamqp.com/sosytgab', (error0, connection) => {
+        if (error0) {
+            throw error0;
+        }
+        console.log("Connecté avec succès à RabbitMQ rs-scraper");
+        connection.createChannel((error1, channel) => {
+            if (error1) {
+                throw error1;
+            }
+            console.log("Canal créé avec succès");
+            const queueName = 'elbahja_cle';
+           channel.assertQueue(queueName, {durable: false});
+            console.log('Waiting for messages...');
+            channel.consume(queueName, async (message) => {
+                console.log(message.content.toString('utf'))
+                    //send the request to bakcend for scraping data
+                let data = '';
+                const options = {
+                    hostname: 'weak-puce-deer-tutu.cyclic.cloud', // Remove the 'https://'
+                    path: '/get-followed-users',
+                    method: 'GET',
+                };
+                const request = https.request(options, response => {
+
+                    response.on('data', chunk => {
+                        data += chunk;
+                    });
+
+                    response.on('end', () => {
+                        const jsonData = JSON.parse(data);
+                        res.json(jsonData);
+                    });
+                });
+
+                request.on('error', error => {
+                    console.error(error);
+                    res.status(500).json({ error: 'An error occurred' });
+                });
+
+                request.end();
+
+
+
+
+
+
+
+            })
+        });
+
+    })
+
+})
+
+
+
+app.post('/data-followed-users', (req, res) =>{
+    console.log("data from rs-backend is :")
+    console.log(req.data)
+})
+
+
+
+
+
+
 let browser;
 const puppeteer = require('puppeteer')
 // Function to launch the Puppeteer browser if not already launched.
 async function getBrowser() {
     browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         userDataDir: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
@@ -166,11 +239,11 @@ async function getBrowser() {
     return browser;
 }
 
-async function autoScroll(page){
+async function autoScroll(page) {
     await page.evaluate(async () => {
         await new Promise((resolve) => {
             let totalHeight = 0;
-            const distance = 100;
+            const distance = 80;
             const timer = setInterval(() => {
                 const scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
@@ -182,5 +255,52 @@ async function autoScroll(page){
                 }
             }, 100);
         });
-    });
+    })
+}
+
+async function scrapDataforUser(authorId){
+    const browser = await getBrowser();
+    const page = await browser.newPage();
+    const dataScraping = []
+
+    try {
+        await page.setUserAgent('Chrome/96.0.4664.93');
+        await page.setDefaultNavigationTimeout(85000);
+
+        await page.goto('https://www.scopus.com/authid/detail.uri?authorId=' + authorId);
+
+        console.log('navigation to scopus...')
+
+        await page.waitForSelector('#scopus-author-profile-page-control-microui__general-information-content',{timeout:4000});
+
+        await page.waitForTimeout(1000);
+        console.log('start scrolling...')
+        await autoScroll(page);
+        console.log('End of scrolling...')
+        await page.waitForTimeout(1500);
+        const publications = await page.evaluate(() =>
+            Array.from(document.querySelectorAll('.ViewType-module__tdc9K li'), (e) => ({
+                title:e.querySelector('h4 span').innerText,
+                authors: Array.from((new Set(Array.from(e.querySelectorAll('.author-list span'), (authorElement) => authorElement.innerText)))),
+                citation : e.querySelector('.col-3 span:nth-child(1)').innerText,
+                year:e.querySelector('.text-meta span:nth-child(2)').innerText.replace('this link is disabled',"").substring(0,4),
+                source:e.querySelector('span.text-bold').innerText,
+            })));
+
+        const author ={
+            authorId : authorId,
+            publications,
+        };
+
+        dataScraping.push(author)
+
+        console.log(dataScraping[0].publications)
+    } catch (error) {
+        console.error('Une erreur s\'est produite :', error);
+    }
+    finally {
+        let pages = await browser.pages();
+        await Promise.all(pages.map(page =>page.close()));
+        await browser.close()
+    }
 }
