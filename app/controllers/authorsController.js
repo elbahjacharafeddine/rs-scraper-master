@@ -199,7 +199,7 @@ const author = async (authorId, ws) => {
     for(const e of paginationLink){
       console.log("element is clicked ...!")
       await e.click()
-      await page.waitForTimeout(1500)
+      await page.waitForTimeout(2000)
 
       await page.waitForSelector('.ViewType-module__tdc9K li');
       const elements = await page.$$('.ViewType-module__tdc9K li');
