@@ -68,7 +68,7 @@ app.get('/prof/scopus/:authorId',async (req, res) =>{
 
         console.log('navigation to scopus...')
 
-        await page.waitForSelector('#scopus-author-profile-page-control-microui__general-information-content',{timeout:4000});
+        // await page.waitForSelector('#scopus-author-profile-page-control-microui__general-information-content',{timeout:4000});
 
         // await page.waitForSelector('.container .AuthorProfilePageControl-module__sgqt5',{ timeout: 3000 })
         // page.waitForTimeout(1000)
