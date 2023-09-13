@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 // const { scholarScraper, scopusScraper } = require("./../scraper");
 const {json} = require("express");
 var getDirName = require("path").dirname;
@@ -90,6 +90,19 @@ const author = async (authorId, ws) => {
     // await page.waitForFunction(() => document.readyState === 'complete');
     const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
     await goToErressource(page)
+    const cookiesErressource = await page.cookies()
+        const cookiesJson = JSON.stringify(cookiesErressource,null,2)
+        const filePath = 'cookies.txt';
+        await fs.truncate(filePath,0)
+        await fs.writeFile(filePath,cookiesJson,(err) => {
+            if (err){
+                console.log("error when writing in the file")
+            }
+            else {
+                console.log("good thanks ")
+            }
+        })
+
     ws.send(JSON.stringify(response))
     await page.goto('https://www-scopus-com.eressources.imist.ma/authid/detail.uri?authorId=' + authorId);
     await navigationPromise; // Wait for the DOM content to be fully loaded
@@ -225,6 +238,11 @@ const author = async (authorId, ws) => {
     ws.send(JSON.stringify(fin))
   }
   finally {
+    const cookies = await page.cookies();
+    for (const cookie of cookies) {
+      console.log("cookies had deleted with success ...")
+      await page.deleteCookie(cookie);
+    }
     await page.close()
     await browser.close();
 

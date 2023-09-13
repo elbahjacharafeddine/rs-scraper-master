@@ -41,7 +41,7 @@ const journalData = async ({ journalName, year }) => {
         `${SCIMAGOJR_URL}q=${journalName}`,
         DIRECT_NAVIGATION_OPTIONS
     );
-    console.log('navigate to scimagorJR')
+    // console.log('navigate to scimagorJR')
 
 
     const matchingJournal = await page.evaluate(
@@ -77,7 +77,7 @@ const journalData = async ({ journalName, year }) => {
       await page.goto(matchingJournal.link, DIRECT_NAVIGATION_OPTIONS);
     else return { error: matchingJournal };
 
-    console.log('start to collect SJR')
+    // console.log('start to collect SJR')
     await autoScrollToPercentage(page, 35)
     const selector = 'body > div.dashboard > div.cell1x1.dynamiccell > div.cellheader > div.combo_buttons > div.combo_button.table_button > img'
     await page.waitForSelector(selector);
@@ -108,7 +108,7 @@ const journalData = async ({ journalName, year }) => {
         sjr = item.sjr
       }
     }
-    console.log('dans la derniere etape ...')
+    // console.log('dans la derniere etape ...')
 
     return { journal: { SJR:sjr } };
   } catch (error) {

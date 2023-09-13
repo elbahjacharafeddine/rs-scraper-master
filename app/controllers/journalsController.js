@@ -18,39 +18,39 @@ const journalData = async (journalName,year, ws) => {
         // ||
         // (greensciResult.journal && greensciResult.journal.IF)
     ){
-      console.log("we will send the response")
+      // console.log("we will send the response")
 
-      ws.send(JSON.stringify(
-          journal= {
-            SJR:
-                scimagojrResult.journal && scimagojrResult.journal.SJR
-                    ? scimagojrResult.journal.SJR
-                    : "",
-            // IF:
-            //   greensciResult.journal && greensciResult.journal.IF
-            //     ? greensciResult.journal.IF
-            //     : "",
-          },
-      ));
+      // ws.send(JSON.stringify(
+      //     journal= {
+      //       SJR:
+      //           scimagojrResult.journal && scimagojrResult.journal.SJR
+      //               ? scimagojrResult.journal.SJR
+      //               : "",
+      //       // IF:
+      //       //   greensciResult.journal && greensciResult.journal.IF
+      //       //     ? greensciResult.journal.IF
+      //       //     : "",
+      //     },
+      // ));
+
+      return scimagojrResult.journal && scimagojrResult.journal.SJR
+          ? scimagojrResult.journal.SJR
+          : ""
 
     }
-    // else if (greensciResult.journal.error) {
-    //   resp
-    //     .status(200)
-    //     .send({
-    //       error: { ...scimagojrResult.journal, ...greensciResult.journal },
-    //     });
-    // }
+
     else {
-      ws.send(JSON.stringify(journal={
-        SJR:"-"
-      }))
+      // ws.send(JSON.stringify(journal={
+      //   SJR:"-"
+      // }))
+      return '-'
     }
   }
   catch (error){
-    ws.send(JSON.stringify(journal={
-      SJR:""
-    }))
+    // ws.send(JSON.stringify(journal={
+    //   SJR:""
+    // }))
+    return "-"
   }
 };
 

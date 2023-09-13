@@ -8,6 +8,7 @@ const http = require("http");
 const app = express();
 const WebSocket = require('ws');
 const https = require('https');
+const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 
 const Sentry = require('@sentry/node');
 Sentry.init({ dsn: 'https://80a12083a1774420b431700d1d2cf56f@o433230.ingest.sentry.io/5387943' });
@@ -33,11 +34,14 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const port = 2000
-server.listen(process.env.PORT || port, () => {
+server.listen(process.env.PORT || port,  () => {
     console.log(`Server started on http://localhost:${port}`);
+
 });
 
 wss.on('connection', async (ws) => {
+
+
     console.log('WebSocket connection established');
 
     ws.on('message', async (message) => {
@@ -47,7 +51,21 @@ wss.on('connection', async (ws) => {
         }
         else if(data.journalName && data.year){
             console.log(data.journalName +" && year = "+data.year)
-            await journalsController.journalData(data.journalName, data.year, ws)
+            // await journalsController.journalData(data.journalName, data.year, ws)
+
+
+            const [SJR, IF] = await Promise.all([
+                executeThread('Scopus',data.journalName,data.year),
+                executeThread('Clarivate',data.journalName.toUpperCase(),data.year)
+                //
+            ]);
+
+            ws.send(JSON.stringify(
+                journal= {
+                    SJR, IF
+                },
+            ));
+
         }
     })})
 
@@ -157,69 +175,27 @@ app.get('/prof/scopus/:authorId',async (req, res) =>{
 
 
 
-const amqp = require('amqplib/callback_api')
-app.get('/call-rabbitmq',async (req, res) => {
-let listFollowedUsers = []
-    amqp.connect('amqps://sosytgab:jPleCfcPHfayJEgRoLXeDgVgyt3aBd_0@rattlesnake.rmq.cloudamqp.com/sosytgab', (error0, connection) => {
-        if (error0) {
-            throw error0;
-        }
-        console.log("Connecté avec succès à RabbitMQ rs-scraper");
-        connection.createChannel((error1, channel) => {
-            if (error1) {
-                throw error1;
-            }
-            console.log("Canal créé avec succès");
-            const queueName = 'elbahja_cle';
-           channel.assertQueue(queueName, {durable: false});
-            console.log('Waiting for messages...');
-            channel.consume(queueName, async (message) => {
-                console.log(message.content.toString('utf'))
-                    //send the request to bakcend for scraping data
-                let data = '';
-                const options = {
-                    hostname: 'weak-puce-deer-tutu.cyclic.cloud', // Remove the 'https://'
-                    path: '/get-followed-users',
-                    method: 'GET',
-                };
-                const request = https.request(options, response => {
+async function executeThread(platform,journal, year) {
+    return new Promise(async (resolve) => {
+        const worker = new Worker('./scraper.js', { workerData: { platform, journal, year } });
 
-                    response.on('data', chunk => {
-                        data += chunk;
-                    });
-
-                    response.on('end', () => {
-                        const jsonData = JSON.parse(data);
-                        res.json(jsonData);
-                    });
-                });
-
-                request.on('error', error => {
-                    console.error(error);
-                    res.status(500).json({ error: 'An error occurred' });
-                });
-
-                request.end();
-
-
-
-
-
-
-
-            })
+        worker.on('message', (message) => {
+            resolve(message);
         });
 
-    })
+        worker.on('error', (error) => {
+            console.error(`Worker error: ${error}`);
+            resolve(null);
+        });
 
-})
+        worker.on('exit', (code) => {
+            if (code !== 0) {
+                console.error(`Worker stopped with exit code ${code}`);
+            }
+        });
+    });
+}
 
-
-
-app.post('/data-followed-users', (req, res) =>{
-    console.log("data from rs-backend is :")
-    console.log(req.data)
-})
 
 
 
