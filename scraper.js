@@ -52,7 +52,25 @@ async function gotoClarivate(journal, year) {
         if (data.length > 0) {
             cookies = JSON.parse(data);
         } else {
-            console.log('Le fichier est vide ou ne contient pas de cookies.');
+            await page.goto("https://eressources.imist.ma/login")
+            await page.type('#email', 'e-elbahja.c@ucd.ma'); //e-elbahja.c@ucd.ma // lachgar.m@ucd.ac.ma
+            await page.type('#password', 'LEv.q8XeGxP2Pid'); //LEv.q8XeGxP2Pid // Azerty@@00
+            await Promise.all([
+                page.waitForNavigation(), // Wait for the navigation to complete after clicking the login button.
+                page.click('button[type="submit"]'),
+            ]);
+            console.log("Authentication with success ... ");
+
+            const cookiesErressource = await page.cookies()
+            const cookiesJson = JSON.stringify(cookiesErressource,null,2)
+
+            await fs.writeFile(filePath, cookiesJson, (err) => {
+                if (err) {
+                    console.log("error when writing in the file")
+                } else {
+                    console.log("good thanks ")
+                }
+            })
         }
 
         await page.setCookie(...cookies);
