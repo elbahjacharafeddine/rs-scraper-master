@@ -43,7 +43,7 @@ const puppeteer = require('puppeteer')
 let browser
 async function getBrowser() {
   browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     userDataDir: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
