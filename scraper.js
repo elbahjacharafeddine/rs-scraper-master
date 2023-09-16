@@ -41,17 +41,18 @@ else if (platform === 'Clarivate') {
 async function gotoClarivate(journal, year) {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
-    const filePath = 'cookies.txt'; // Spécifiez le chemin du fichier contenant les cookies.
+    const filePath = 'cookies.txt';
+    const file = 'date.txt';
 
     try {
         let cookies = [];
-
-        // Utilisez fs.promises.readFile pour lire le fichier de manière asynchrone.
         const data = await fs.readFile(filePath, 'utf8');
+        const dat = await fs.readFile(file, 'utf8');
+        const savedDate = new Date(JSON.parse(dat));
+        const currentDate = new Date();
+        const diffInHours = (currentDate - savedDate) / (1000 * 3600) +1;
 
-        if (data.length > 0) {
-            cookies = JSON.parse(data);
-        } else {
+        if (diffInHours >= 4) {
             await page.goto("https://eressources.imist.ma/login")
             await page.type('#email', 'e-elbahja.c@ucd.ma'); //e-elbahja.c@ucd.ma // lachgar.m@ucd.ac.ma
             await page.type('#password', 'LEv.q8XeGxP2Pid'); //LEv.q8XeGxP2Pid // Azerty@@00
@@ -72,9 +73,34 @@ async function gotoClarivate(journal, year) {
                 }
             })
         }
+        else{
+            if (data.length > 0) {
+                cookies = JSON.parse(data);
+                await page.setCookie(...cookies);
+                console.log('Cookies ont été ajoutés avec succès.');
+            }
+            else {
+                await page.goto("https://eressources.imist.ma/login")
+                await page.type('#email', 'e-elbahja.c@ucd.ma'); //e-elbahja.c@ucd.ma // lachgar.m@ucd.ac.ma
+                await page.type('#password', 'LEv.q8XeGxP2Pid'); //LEv.q8XeGxP2Pid // Azerty@@00
+                await Promise.all([
+                    page.waitForNavigation(), // Wait for the navigation to complete after clicking the login button.
+                    page.click('button[type="submit"]'),
+                ]);
+                console.log("Authentication with success ... ");
 
-        await page.setCookie(...cookies);
-        console.log('Cookies ont été ajoutés avec succès.');
+                const cookiesErressource = await page.cookies()
+                const cookiesJson = JSON.stringify(cookiesErressource,null,2)
+
+                await fs.writeFile(filePath, cookiesJson, (err) => {
+                    if (err) {
+                        console.log("error when writing in the file")
+                    } else {
+                        console.log("good thanks ")
+                    }
+                })
+            }
+        }
 
         await page.setDefaultNavigationTimeout(85000);
         await page.goto("https://jcr.clarivate.com.eressources.imist.ma/jcr-jp/journal-profile?journal=" + journal + "&year=" + year);
@@ -108,11 +134,13 @@ async function gotoClarivate(journal, year) {
                 quartileIF = e.quartile;
             }
         });
+        await fs.writeFile(file,JSON.stringify(currentDate),null,2)
         return quartileIF;
     } catch (e) {
         console.log("Erreur : " + e);
     } finally {
         await browser.close(); // Assurez-vous de fermer le navigateur en fin de traitement.
+
     }
 }
 async function autoScrollToPercentage(page, percentage) {

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "ezproxyn",
+    "value": "wnnk7rYajYMQZNQ",
+    "domain": ".imist.ma",
+    "path": "/",
+    "expires": -1,
+    "size": 23,
+    "httpOnly": true,
+    "secure": true,
+    "session": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "ezproxyl",
+    "value": "wnnk7rYajYMQZNQ",
+    "domain": ".imist.ma",
+    "path": "/",
+    "expires": -1,
+    "size": 23,
+    "httpOnly": true,
+    "secure": false,
+    "session": true,
+    "sameSite": "Lax"
+  },
+  {
+    "name": "ezproxy",
+    "value": "wnnk7rYajYMQZNQ",
+    "domain": ".imist.ma",
+    "path": "/",
+    "expires": -1,
+    "size": 22,
+    "httpOnly": false,
+    "secure": false,
+    "session": true
+  }
+]
