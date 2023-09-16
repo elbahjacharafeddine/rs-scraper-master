@@ -58,11 +58,17 @@ const authorSearch = async ({ authorName }) => {
   // });
 const browser = await getBrowser()
   const page = await browser.newPage();
+
   await page.setUserAgent('Chrome/96.0.4664.93');
   await page.setDefaultNavigationTimeout(85000);
   // await page.waitForFunction(() => document.readyState === 'complete');
   const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
   console.log("received name "+ authorName)
+  const pages = await browser.pages()
+  for(let p of pages){
+    await p.close()
+    break
+  }
   try {
     const params =
         authorName.trim().split(" ").length > 1
@@ -129,7 +135,10 @@ const browser = await getBrowser()
     // console.error(error);
     return { error };
   } finally {
-    await page.close();
+    const pages = await browser.pages()
+    for(let p of pages){
+      await p.close()
+    }
     await browser.close();
     console.log("partie finally")
   }
