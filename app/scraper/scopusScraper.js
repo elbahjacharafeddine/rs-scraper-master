@@ -63,7 +63,6 @@ const browser = await getBrowser()
   await page.setDefaultNavigationTimeout(85000);
   // await page.waitForFunction(() => document.readyState === 'complete');
   const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-  console.log("received name "+ authorName)
   const pages = await browser.pages()
   for(let p of pages){
     await p.close()

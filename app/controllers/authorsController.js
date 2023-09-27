@@ -60,10 +60,10 @@ async function autoScroll(page){
 }
 
 
-const authorSearch = async (req, resp) => {
-  const { authorName } = req.params;
+const authorSearch = async (authorName, ws) => {
+
   if (!authorName) {
-    resp.status(200).send({ error: "No author name" });
+    ws.send("error")
     return;
   }
 
@@ -74,7 +74,16 @@ const authorSearch = async (req, resp) => {
       // ...(scholarAuthors.authors ? scholarAuthors.authors : []),
       ...(scopusAuthors.authors ? scopusAuthors.authors : []),
     ];
-    resp.send({ authors });
+    let auths = {
+      authors : authors
+    }
+    await ws.send(JSON.stringify(authors));
+  }
+  else {
+    let error ={
+      error :"error for searching about "+ authorName
+    }
+    await ws.send(JSON.stringify(error))
   }
 };
 

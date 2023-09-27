@@ -67,6 +67,10 @@ wss.on('connection', async (ws) => {
             ));
 
         }
+        else if(data.authorName){
+            console.log("Le nom de l'auteur est : "+data.authorName)
+            await authorsController.authorSearch(data.authorName, ws)
+        }
     })})
 
 
