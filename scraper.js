@@ -137,6 +137,8 @@ async function gotoClarivate(journal, year) {
         await fs.writeFile(file,JSON.stringify(currentDate),null,2)
         return quartileIF;
     } catch (e) {
+        let quartileIF = "-";
+        return quartileIF;
         console.log("Erreur : " + e);
     } finally {
         await browser.close(); // Assurez-vous de fermer le navigateur en fin de traitement.
